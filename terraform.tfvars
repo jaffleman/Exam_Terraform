@@ -47,3 +47,8 @@ key_name = "Datascientest-Exam-ec2-paris"
 ########################################################
 ebs_size_gb     = 10
 ebs_device_name = "/dev/xvdf"
+
+########################################################
+# HTTPS / ALB
+########################################################
+https_fqdn = "exam-terraform.jaffleman.tech"

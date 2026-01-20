@@ -45,3 +45,15 @@ variable "ebs_device_name" {
   type    = string
   default = "/dev/xvdf"
 }
+
+# HTTPS / ALB
+variable "https_fqdn" {
+  description = "FQDN public à sécuriser (ex: exam-terraform.jaffleman.tech)"
+  type        = string
+}
+
+variable "health_check_path" {
+  description = "Chemin de health-check pour WordPress"
+  type        = string
+  default     = "/"
+}

@@ -99,6 +99,22 @@ module "ebs" {
   instance_id       = module.ec2.instance_id
 }
 
+
+# ───────────────────────────
+# 5) ALB + ACM + Listeners (module alb)
+# ───────────────────────────
+module "alb" {
+  source = "./modules/alb"
+
+  namespace         = var.namespace
+  vpc_id            = module.networking.vpc_id
+  public_subnet_ids = module.networking.public_subnets
+  ec2_instance_ids  = [module.ec2.instance_id] # on attache ton instance WordPress
+  https_fqdn        = var.https_fqdn
+  health_check_path = var.health_check_path
+}
+
+
 # ───────────────────────────
 # Outputs
 # ───────────────────────────
@@ -133,3 +149,12 @@ output "ec2_availability_zone" { value = module.ec2.availability_zone }
 
 output "ebs_volume_id" { value = module.ebs.volume_id }
 output "ebs_attachment_device_name" { value = module.ebs.attachment_device_name }
+output "alb_dns_name" {
+  description = "Nom DNS public de l'ALB"
+  value       = module.alb.alb_dns_name
+}
+
+output "acm_dns_validation_records" {
+  description = "CNAME à créer chez OVH pour valider le certificat"
+  value       = module.alb.acm_dns_validation_records
+}

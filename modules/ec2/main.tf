@@ -1,6 +1,6 @@
 
 # AMI Amazon Linux 2 (x86_64, HVM, EBS gp2/gp3)
-data "aws_ami" "exam-Terraform-ec2" {
+data "aws_ami" "amazon_linux2" {
   most_recent = true
   owners      = ["amazon"]
 

@@ -4,8 +4,19 @@
 terraform.tfstate
 terraform.tfstate.backup
 *.tfstate*
+*.tfstate
+*.tfplan
+crash.log
+*.tfstate
+*.tfplan
 crash.log
 # Secrets / clés
 *.pem
 .env
 aws_credentials
+# OS/editor noise
+.DS_Store
+Thumbs.db
+*.swp
+.idea/
+.vscode/
