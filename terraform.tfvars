@@ -1,7 +1,7 @@
 ########################################################
 # Identité et nommage
 ########################################################
-namespace = "wp-rds"
+namespace = "jaffleman-exam-terraform"
 
 ########################################################
 # Réseau VPC + Subnets (Paris eu-west-3)
@@ -21,14 +21,14 @@ private_subnet_cidrs = [
   "10.0.2.0/24"  # eu-west-3b
 ]
 
-# CIDR autorisé pour SSH (remplace TON_IP)
+# CIDR autorisé pour SSH 
 admin_cidr = "52.210.167.73/32"
 
 ########################################################
 # Base de données MySQL (RDS)
 ########################################################
 db_name     = "wordpress"
-db_username = "wpuser"
+db_username = "jaffleman"
 
 # Instance RDS
 rds_instance_class        = "db.t3.micro"
@@ -38,7 +38,7 @@ backup_retention_days     = 7
 multi_az                  = true
 
 ########################################################
-# EC2 WordPress
+# EC2 WordPress ssh key
 ########################################################
 key_name = "Datascientest-Exam-ec2-paris"
 
