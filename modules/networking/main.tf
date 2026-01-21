@@ -7,7 +7,6 @@ data "aws_availability_zones" "available" {
 }
 
 locals {
-  # Hypothèse : public_subnet_cidrs et private_subnet_cidrs ont la même taille
   azs_count = length(var.public_subnet_cidrs)
   azs       = slice(data.aws_availability_zones.available.names, 0, local.azs_count)
 

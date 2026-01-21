@@ -64,9 +64,9 @@ resource "aws_lb_target_group" "this" {
 # Attachements des EC2 au TG
 
 resource "aws_lb_target_group_attachment" "ec2" {
-  count            = length(var.ec2_instance_ids) # <- longueur connue au plan (1)
+  count            = length(var.ec2_instance_ids)
   target_group_arn = aws_lb_target_group.this.arn
-  target_id        = var.ec2_instance_ids[count.index] # <- valeur connue à l’apply accepté
+  target_id        = var.ec2_instance_ids[count.index]
   port             = 80
 }
 
@@ -79,7 +79,7 @@ resource "aws_acm_certificate" "this" {
   lifecycle { create_before_destroy = true }
 }
 
-# Sortie utile : CNAME à créer chez OVH
+# Sortie utile : CNAME à créer chez OVH (DNS jaffleman.tech)
 output "acm_dns_validation_records" {
   description = "CNAME à créer (OVH) pour valider le certificat ACM"
   value = [

@@ -21,6 +21,21 @@ resource "random_id" "dbsg" {
   byte_length = 4
 }
 
+# AL2 la plus récente en eu-west-3
+data "aws_ami" "al2" {
+  most_recent = true
+  owners      = ["137112412989"] # Amazon
+
+  filter {
+    name   = "name"
+    values = ["amzn2-ami-hvm-*-x86_64-gp2"]
+  }
+  filter {
+    name   = "virtualization-type"
+    values = ["hvm"]
+  }
+}
+
 # ───────────────────────────
 # 1) Réseau (VPC + subnets + IGW + NAT + routes + SG + DB Subnet Group)
 # ───────────────────────────
@@ -109,11 +124,51 @@ module "alb" {
   namespace         = var.namespace
   vpc_id            = module.networking.vpc_id
   public_subnet_ids = module.networking.public_subnets
-  ec2_instance_ids  = [module.ec2.instance_id] # on attache ton instance WordPress
+  ec2_instance_ids  = [] # Pas d'instances rattachées directement
   https_fqdn        = var.https_fqdn
   health_check_path = var.health_check_path
 }
 
+# ───────────────────────────
+# 6) ASG (rattachement au TG de l'ALB)
+# ───────────────────────────
+module "asg" {
+  source = "./modules/asg"
+
+  namespace     = var.namespace
+  ami_id        = data.aws_ami.al2.id
+  instance_type = "t3.micro"
+  key_name      = var.key_name
+
+  vpc_security_group_ids = [
+    module.networking.web_sg_id,
+    module.networking.admin_ssh_sg_id
+  ]
+  public_subnet_ids = module.networking.public_subnets # doit contenir 2 AZ
+
+  # Rattachement direct au Target Group de l'ALB
+  tg_arn = module.alb.tg_arn
+
+  # user_data identique à celui de l'EC2 historique
+  user_data = templatefile("${path.root}/install_wordpress.sh", {
+    DB_NAME     = var.db_name
+    DB_USER     = var.db_username
+    DB_PASS     = module.rds.db_password
+    DB_HOST     = module.rds.endpoint
+    MOUNT_POINT = "/var/www/html"
+    DEVICE_NAME = var.ebs_device_name
+  })
+
+  # Disque data si ton script l’utilise
+  ebs_device_name = var.ebs_device_name
+  ebs_size_gb     = var.ebs_size_gb
+
+  # --- Mono-instance, failover AZ, pas de scale-out ---
+  desired_capacity       = 1
+  min_size               = 1
+  max_size               = 1
+  enable_target_tracking = false
+}
 
 # ───────────────────────────
 # Outputs
@@ -158,3 +213,9 @@ output "acm_dns_validation_records" {
   description = "CNAME à créer chez OVH pour valider le certificat"
   value       = module.alb.acm_dns_validation_records
 }
+
+output "asg_name" {
+  description = "Nom de l'Auto Scaling Group"
+  value       = module.asg.asg_name
+}
+

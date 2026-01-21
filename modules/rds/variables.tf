@@ -2,7 +2,7 @@
 variable "namespace" { type = string }
 variable "vpc_id" { type = string }
 variable "db_subnet_group_name" { type = string } # vient du module networking
-variable "web_sg_id" { type = string }            # SG WordPress (pour autoriser 3306)
+variable "web_sg_id" { type = string }
 
 variable "db_name" { type = string }
 variable "db_username" { type = string }

@@ -9,6 +9,6 @@ variable "sg_ids" {
 }
 
 variable "user_data" {
-  description = "Script d'initialisation (install WordPress, etc.)"
+  description = "Script d'initialisation (WordPress)"
   type        = string
 }
